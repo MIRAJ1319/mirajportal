@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Personal Portal</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:#f2f2f2;
+padding:15px;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:18px;
+border-radius:15px;
+margin-bottom:15px;
+box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+h1,h2{
+margin-bottom:15px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:10px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:16px;
+}
+
+button{
+padding:12px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:8px;
+font-size:16px;
+cursor:pointer;
+width:100%;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+.logout{
+background:red;
+margin-top:10px;
+}
+
+.note,
+.tx{
+background:#f7f7f7;
+padding:10px;
+border-radius:8px;
+margin-top:8px;
+}
+
+.hidden{
+display:none;
+}
+
+.total{
+font-weight:bold;
+margin-top:10px;
+line-height:1.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- Login -->
+<div class="card" id="loginBox">
+<h1>Login Portal</h1>
+
+<input type="text" id="username" placeholder="Username">
+<input type="password" id="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" class="hidden">
+
+<div class="card">
+<h1 id="welcomeText">Welcome</h1>
+<button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<!-- Notes -->
+<div class="card">
+<h2>📝 Notes</h2>
+
+<input type="text" id="noteInput" placeholder="New note...">
+<button onclick="addNote()">Add Note</button>
+
+<div id="notesList"></div>
+</div>
+
+<!-- হিসাব -->
+<div class="card">
+<h2>💰 হিসাব-নিকাশ</h2>
+
+<input type="text" id="titleInput" placeholder="Description">
+<input type="number" id="amountInput" placeholder="Amount">
+
+<button onclick="addTransaction()">Add</button>
+
+<div class="total">
+Total: <span id="total">0</span> ৳ <br>
+This Month: <span id="monthly">0</span> ৳
+</div>
+
+<div id="txList"></div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+let user = localStorage.getItem("user");
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
+let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+
+if(user){
+showDashboard(user);
+}
+
+function login(){
+let username = document.getElementById("username").value;
+let password = document.getElementById("password").value;
+
+if(username === "Miraj" && password === "miraj@"){
+localStorage.setItem("user", username);
+showDashboard(username);
+}else{
+alert("Wrong Username or Password");
+}
+}
+
+function logout(){
+localStorage.removeItem("user");
+location.reload();
+}
+
+function showDashboard(name){
+document.getElementById("loginBox").classList.add("hidden");
+document.getElementById("dashboard").classList.remove("hidden");
+document.getElementById("welcomeText").innerText = "Welcome, " + name;
+
+renderNotes();
+renderTransactions();
+}
+
+function addNote(){
+let note = document.getElementById("noteInput").value;
+
+if(note.trim() === "") return;
+
+notes.push(note);
+localStorage.setItem("notes", JSON.stringify(notes));
+document.getElementById("noteInput").value = "";
+
+renderNotes();
+}
+
+function renderNotes(){
+let html = "";
+
+notes.forEach(n=>{
+html += `<div class="note">${n}</div>`;
+});
+
+document.getElementById("notesList").innerHTML = html;
+}
+
+function addTransaction(){
+let title = document.getElementById("titleInput").value;
+let amount = document.getElementById("amountInput").value;
+
+if(title.trim()==="" || amount==="") return;
+
+transactions.push({
+title:title,
+amount:Number(amount),
+date:new Date().toISOString()
+});
+
+localStorage.setItem("transactions", JSON.stringify(transactions));
+
+document.getElementById("titleInput").value="";
+document.getElementById("amountInput").value="";
+
+renderTransactions();
+}
+
+function renderTransactions(){
+let html = "";
+let total = 0;
+let monthly = 0;
+
+let now = new Date();
+let month = now.getMonth();
+let year = now.getFullYear();
+
+transactions.forEach(t=>{
+html += `<div class="tx">${t.title} - ${t.amount} ৳</div>`;
+total += t.amount;
+
+let d = new Date(t.date);
+
+if(d.getMonth()===month && d.getFullYear()===year){
+monthly += t.amount;
+}
+});
+
+document.getElementById("txList").innerHTML = html;
+document.getElementById("total").innerText = total;
+document.getElementById("monthly").innerText = monthly;
+}
+</script>
+
+</body>
+</html>
