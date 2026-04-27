@@ -240,5 +240,16 @@
         // পেজ লোড হওয়া মাত্র লগইন চেক করবে
         window.onload = login;
     </script>
+    <script>
+function showSection(sectionId) {
+    // সব সেকশন আগে হাইড (Hide) করে দাও
+    document.querySelectorAll('.content').forEach(div => {
+        div.style.display = 'none';
+    });
+    // শুধু নির্দিষ্ট সেকশনটি শো (Show) করো
+    document.getElementById(sectionId).style.display = 'block';
+}
+</script>
+
 </body>
 </html>
