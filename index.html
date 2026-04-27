@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraj Portal Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f0f2f5; display: flex; min-height: 100vh; }
+
+        /* লগইন সেকশন */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex; align-items: center; justify-content: center; z-index: 9999;
+        }
+        .login-card { background: white; padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
+
+        /* ড্যাশবোর্ড লেআউট */
+        #main-dashboard { display: none; width: 100%; }
+        .sidebar { width: 260px; background: #1a202c; color: white; position: fixed; height: 100%; padding: 20px 0; }
+        .sidebar h2 { text-align: center; color: #63b3ed; margin-bottom: 30px; }
+        .sidebar a { color: #cbd5e0; padding: 15px 25px; display: block; text-decoration: none; transition: 0.3s; }
+        .sidebar a:hover { background: #2d3748; color: white; padding-left: 35px; }
+        
+        .main-content { margin-left: 260px; padding: 40px; width: calc(100% - 260px); }
+        .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 12px; background: #3182ce; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2b6cb0; }
+
+        .item { background: #f7fafc; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #3182ce; display: flex; justify-content: space-between; }
+        .logout-btn { background: #e53e3e; margin-top: 50px; }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; width: 100%; }
+            body { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2>Miraj Portal</h2>
+            <p style="margin-bottom: 20px;">প্রবেশ করতে তথ্য দিন</p>
+            <input type="text" id="userIn" placeholder="Username">
+            <input type="password" id="passIn" placeholder="Password">
+            <button onclick="checkLogin()">প্রবেশ করুন</button>
+        </div>
+    </div>
+
+    <div id="main-dashboard">
+        <div class="sidebar">
+            <h2>Miraj Admin</h2>
+            <a href="#">🏠 ড্যাশবোর্ড</a>
+            <a href="#">📝 নোটস</a>
+            <a href="#">💰 হিসাব-নিকাশ</a>
+            <button class="logout-btn" onclick="location.reload()">লগ আউট</button>
+        </div>
+
+        <div class="main-content">
+            <div class="card">
+                <h2>স্বাগতম, Miraj!</h2>
+                <p>আজকের তারিখ: <span id="date"></span></p>
+            </div>
+
+            <div class="card">
+                <h3>📝 নতুন নোট</h3>
+                <input type="text" id="noteInput" placeholder="এখানে লিখুন...">
+                <button onclick="addNote()">সেভ করুন</button>
+                <div id="noteList" style="margin-top: 20px;"></div>
+            </div>
+
+            <div class="card">
+                <h3>💰 হিসাব-নিকাশ (Accounting)</h3>
+                <input type="text" id="transDesc" placeholder="খরচের খাত">
+                <input type="number" id="transAmount" placeholder="টাকা (৳)">
+                <button onclick="addTransaction()">যোগ করুন</button>
+                <div id="transList" style="margin-top: 20px;"></div>
+                <h4 style="margin-top: 10px;">মোট খরচ: <span id="totalDisplay">0</span> ৳</h4>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // লগইন লজিক
+        function checkLogin() {
+            const u = document.getElementById('userIn').value;
+            const p = document.getElementById('passIn').value;
+            if(u === "Miraj" && p === "miraj@") {
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'block';
+                displayNotes();
+                displayTrans();
+                document.getElementById('date').innerText = new Date().toLocaleDateString();
+            } else {
+                alert("ভুল তথ্য দিয়েছেন!");
+            }
+        }
+
+        // নোট ফাংশন
+        function addNote() {
+            const val = document.getElementById('noteInput').value;
+            if(!val) return;
+            let notes = JSON.parse(localStorage.getItem('m_notes')) || [];
+            notes.push(val);
+            localStorage.setItem('m_notes', JSON.stringify(notes));
+            document.getElementById('noteInput').value = "";
+            displayNotes();
+        }
+
+        function displayNotes() {
+            let notes = JSON.parse(localStorage.getItem('m_notes')) || [];
+            document.getElementById('noteList').innerHTML = notes.map(n => `<div class="item">${n}</div>`).join('');
+        }
+
+        // হিসাব ফাংশন
+        function addTransaction() {
+            const desc = document.getElementById('transDesc').value;
+            const amo = document.getElementById('transAmount').value;
+            if(!desc || !amo) return;
+            let trans = JSON.parse(localStorage.getItem('m_trans')) || [];
+            trans.push({d: desc, a: parseFloat(amo)});
+            localStorage.setItem('m_trans', JSON.stringify(trans));
+            document.getElementById('transDesc').value = "";
+            document.getElementById('transAmount').value = "";
+            displayTrans();
+        }
+
+        function displayTrans() {
+            let trans = JSON.parse(localStorage.getItem('m_trans')) || [];
+            let total = 0;
+            document.getElementById('transList').innerHTML = trans.map(t => {
+                total += t.a;
+                return `<div class="item"><span>${t.d}</span> <b>${t.a} ৳</b></div>`;
+            }).join('');
+            document.getElementById('totalDisplay').innerText = total;
+        }
+    </script>
+</body>
+</html>
