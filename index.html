@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miraj Portal Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            display: none; /* লগইন না হওয়া পর্যন্ত কন্টেন্ট লুকানো থাকবে */
+            background-color: #f0f2f5;
+            min-height: 100vh;
+        }
+
+        /* বাম পাশের সাইডবার */
+        .sidebar {
+            width: 260px;
+            background-color: #1a202c;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100%;
+            padding: 20px 0;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 30px;
+            color: #63b3ed;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #cbd5e0;
+            padding: 15px 25px;
+            display: block;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+
+        .sidebar a:hover {
+            background-color: #2d3748;
+            color: white;
+            padding-left: 35px;
+        }
+
+        .logout-btn {
+            margin-top: auto;
+            background-color: #e53e3e;
+            color: white;
+            text-align: center;
+            margin: auto 20px 20px 20px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* ডান পাশের মেইন কন্টেন্ট */
+        .main-content {
+            margin-left: 260px;
+            flex-grow: 1;
+            padding: 40px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .card h2, .card h3 {
+            margin-bottom: 15px;
+            color: #2d3748;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: #2b6cb0;
+        }
+
+        .stats {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #4a5568;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+
+        .list-container {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .item {
+            background: #f7fafc;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #3182ce;
+        }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .main-content { margin-left: 0; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Miraj Portal</h2>
+        <a href="#">🏠 Dashboard</a>
+        <a href="#">📝 Notes</a>
+        <a href="#">💰 হিসাব-নিকাশ</a>
+        <a href="#">⚙️ Settings</a>
+        <a href="#" class="logout-btn" onclick="logout()">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="card">
+            <h2>Welcome, Miraj</h2>
+            <p>আপনার আজকের ড্যাশবোর্ড আপডেট এখানে দেখুন।</p>
+        </div>
+
+        <div class="card">
+            <h3>📝 Notes</h3>
+            <input type="text" id="noteInput" placeholder="নতুন নোট লিখুন...">
+            <button onclick="addNote()">Add Note</button>
+            <div id="noteList" class="list-container"></div>
+        </div>
+
+        <div class="card">
+            <h3>💰 ACCOUNTING</h3>
+            <input type="text" id="transDesc" placeholder="খরচের বিবরণ">
+            <input type="number" id="transAmount" placeholder="টাকার পরিমাণ (৳)">
+            <button onclick="addTransaction()">Add Transaction</button>
+            <div id="transList" class="list-container"></div>
+            <div class="stats">
+                <p>Total: <span id="totalDisplay">0</span> ৳</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- লগইন সিস্টেম ---
+        const login = () => {
+            const user = prompt("Username দিন:");
+            const pass = prompt("Password দিন:");
+
+            if (user === "Miraj" && pass === "miraj@") {
+                document.body.style.display = "flex";
+                displayNotes();
+                displayTrans();
+            } else {
+                alert("ভুল ইউজারনেম বা পাসওয়ার্ড!");
+                window.location.reload();
+            }
+        };
+
+        function logout() {
+            window.location.reload();
+        }
+
+        // --- নোট হ্যান্ডলিং ---
+        function addNote() {
+            const input = document.getElementById('noteInput');
+            if (!input.value) return alert("কিছু লিখুন!");
+            let notes = JSON.parse(localStorage.getItem('miraj_notes')) || [];
+            notes.push(input.value);
+            localStorage.setItem('miraj_notes', JSON.stringify(notes));
+            input.value = "";
+            displayNotes();
+        }
+
+        function displayNotes() {
+            let notes = JSON.parse(localStorage.getItem('miraj_notes')) || [];
+            const container = document.getElementById('noteList');
+            container.innerHTML = notes.map(n => `<div class="item">${n}</div>`).join('');
+        }
+
+        // --- ACCOUNTING ---
+        function addTransaction() {
+            const desc = document.getElementById('transDesc');
+            const amount = document.getElementById('transAmount');
+            if (!desc.value || !amount.value) return alert("বিবরণ এবং টাকা দিন!");
+            let trans = JSON.parse(localStorage.getItem('miraj_trans')) || [];
+            trans.push({ desc: desc.value, amount: parseFloat(amount.value) });
+            localStorage.setItem('miraj_trans', JSON.stringify(trans));
+            desc.value = "";
+            amount.value = "";
+            displayTrans();
+        }
+
+        function displayTrans() {
+            let trans = JSON.parse(localStorage.getItem('miraj_trans')) || [];
+            const container = document.getElementById('transList');
+            let total = 0;
+            container.innerHTML = trans.map(t => {
+                total += t.amount;
+                return `<div class="item"><span>${t.desc}</span> - <b>${t.amount} ৳</b></div>`;
+            }).join('');
+            document.getElementById('totalDisplay').innerText = total;
+        }
+
+        // পেজ লোড হওয়া মাত্র লগইন চেক করবে
+        window.onload = login;
+    </script>
+</body>
+</html>
