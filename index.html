@@ -5,35 +5,197 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miraj Portal Dashboard</title>
     <style>
-        * {/* পুরো পেজটিকে সুন্দর দেখানোর জন্য */
-.login-page {
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
+        /* বেসিক রিসেট */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-/* লগইন বক্সের ডিজাইন */
-.login-card {
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    width: 380px;
-    text-align: center;
-}
+        body {
+            background-color: #f0f2f5;
+        }
 
-.logo-area h2 {
-    color: #1e3c72;
-    margin: 10px 0;
-    font-size: 26px;
-}
+        /* লগইন পেজ ডিজাইন */
+        #login-page {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+        }
 
-.logo-area p {
-    color: #777;
-    font-size: 14px;
+        .login-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            width: 380px;
+            text-align: center;
+        }
+
+        .logo-area h2 {
+            color: #1e3c72;
+            margin: 10px 0;
+            font-size: 26px;
+        }
+
+        .input-field {
+            margin-bottom: 20px;
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            outline: none;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .input-field input:focus {
+            border-color: #2a5298;
+            background-color: #f9f9f9;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover {
+            background: #2a5298;
+            transform: translateY(-2px);
+        }
+
+        /* ড্যাশবোর্ড লেআউট */
+        #main-dashboard {
+            display: none; /* শুরুতে এটি লুকানো থাকবে */
+        }
+
+        .sidebar {
+            width: 260px;
+            background-color: #1a202c;
+            color: white;
+            position: fixed;
+            height: 100%;
+            padding: 20px 0;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 22px;
+            margin-bottom: 30px;
+            color: #63b3ed;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0 20px;
+        }
+
+        .sidebar-menu li {
+            padding: 15px;
+            margin-bottom: 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #2d3748;
+            color: #63b3ed;
+        }
+
+        .content {
+            margin-left: 260px;
+            padding: 30px;
+        }
+
+        .top-nav {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page">
+        <div class="login-card">
+            <div class="logo-area">
+                <h2>Miraj Portal</h2>
+                <p>Welcome Back!</p>
+            </div>
+            <div class="input-field">
+                <input type="text" placeholder="Username" id="username">
+            </div>
+            <div class="input-field">
+                <input type="password" placeholder="Password" id="password">
+            </div>
+            <button class="btn-login" onclick="loginAction()">প্রবেশ করুন</button>
+            <div class="login-footer">
+                <p>© ২০২৬ মিরাজ পোর্টাল ড্যাশবোর্ড</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-dashboard">
+        <div class="sidebar">
+            <h2>Miraj Admin</h2>
+            <ul class="sidebar-menu">
+                <li>🏠 ড্যাশবোর্ড</li>
+                <li>📊 রিপোর্ট</li>
+                <li>⚙️ সেটিংস</li>
+                <li onclick="location.reload()" style="color: #fc8181;">🚪 লগ আউট</li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div class="top-nav">
+                <h3>Main Overview</h3>
+                <span>ইউজার: <strong>Miraj</strong></span>
+            </div>
+            
+            <div style="background: white; padding: 20px; border-radius: 15px; height: 300px;">
+                <h2>স্বাগতম!</h2>
+                <p>এটি আপনার পোর্টালের মূল অংশ। এখান থেকে আপনি সব কিছু নিয়ন্ত্রণ করতে পারবেন।</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loginAction() {
+            const user = document.getElementById('username').value;
+            // সিম্পল চেক: ইউজারনেম খালি না থাকলে ড্যাশবোর্ড দেখাবে
+            if(user !== "") {
+                document.getElementById('login-page').style.display = 'none';
+                document.getElementById('main-dashboard').style.display = 'block';
+            } else {
+                alert("দয়া করে ইউজারনেম দিন!");
+            }
+        }
+    </script>
+
+</body>
+</html>
     margin-bottom: 30px;
 }
 
