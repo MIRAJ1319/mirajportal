@@ -5,12 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Miraj Portal Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Arial, sans-serif;
-        }
+        * {/* পুরো পেজটিকে সুন্দর দেখানোর জন্য */
+.login-page {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* লগইন বক্সের ডিজাইন */
+.login-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    width: 380px;
+    text-align: center;
+}
+
+.logo-area h2 {
+    color: #1e3c72;
+    margin: 10px 0;
+    font-size: 26px;
+}
+
+.logo-area p {
+    color: #777;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* ইনপুট বক্সের স্টাইল */
+.input-field {
+    margin-bottom: 20px;
+}
+
+.input-field input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #eee;
+    border-radius: 10px;
+    outline: none;
+    font-size: 15px;
+    transition: 0.3s;
+}
+
+.input-field input:focus {
+    border-color: #2a5298;
+    background-color: #f9f9f9;
+}
+
+/* প্রবেশ করুন বাটন */
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #1e3c72;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: #2a5298;
+    transform: translateY(-2px);
+}
+
+.login-footer p {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #999;
+}
+}
 
         body {
             display: none; /* লগইন না হওয়া পর্যন্ত কন্টেন্ট লুকানো থাকবে */
@@ -146,7 +217,7 @@
         <h2>Miraj Portal</h2>
         <a href="#">🏠 Dashboard</a>
         <a href="#">📝 Notes</a>
-        <a href="#">💰 হিসাব-নিকাশ</a>
+        <a href="#">💰 Account</a>
         <a href="#">⚙️ Settings</a>
         <a href="#" class="logout-btn" onclick="logout()">Logout</a>
     </div>
